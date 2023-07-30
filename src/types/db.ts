@@ -1,8 +1,8 @@
 import { User } from './user';
 
 export interface Db {
-  user: User[],
-  artist: [],
-  track: [],
-  favorites: []
+  user: User[];
+  artist: [];
+  track: [];
+  favorites: [];
 }
