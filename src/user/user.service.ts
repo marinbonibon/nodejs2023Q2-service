@@ -2,51 +2,69 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
-  NotFoundException
+  NotFoundException,
 } from '@nestjs/common';
-import {
-  CreateUserDto,
-  UpdateUserDto,
-  User,
-  UserWithoutPassword
-} from '../types/user';
+import { User, UserWithoutPassword } from './types/user';
 import { db } from '../../db/database';
 import { isIdValid } from '../utils/uuidValidation';
-import { isValidCreateUserDto } from '../utils/createUserDtoValidation';
-import { isValidUpdateUserDto } from '../utils/updateUserDtoValidation';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
   private readonly users: User[] = db.user;
 
-  create(user: User): UserWithoutPassword {
-    this.users.push(user);
-    const { password, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+  create(user: User): Promise<UserWithoutPassword> {
+    try {
+      return new Promise((res) => {
+        this.users.push(user);
+        const { password, ...userWithoutPassword } = user;
+        res(userWithoutPassword);
+      });
+    } catch (error) {
+      console.log('error', error);
+    }
   }
 
-  update(id: string, dto: UpdateUserDto): UserWithoutPassword {
-    const user = this.findOne(id);
-    if (user.password !== dto.oldPassword) {
-      throw new ForbiddenException(`Old password is incorrect`);
-    }
-    user.password = dto.newPassword;
-    user.version += 1;
-    user.updatedAt = new Date().getDate();
-    const { password, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+  update(id: string, dto: UpdateUserDto): Promise<UserWithoutPassword> {
+   try {
+     return new Promise((res) => {
+       const user = this.findOne(id);
+       if (user.password !== dto.oldPassword) {
+         throw new ForbiddenException(`Old password is incorrect`);
+       }
+       user.password = dto.newPassword;
+       user.version += 1;
+       user.updatedAt = new Date().getDate();
+       const { password, ...userWithoutPassword } = user;
+       res(userWithoutPassword);
+     });
+   } catch (error) {
+     console.log('error', error);
+   }
   }
 
   findAll(): User[] {
-    return this.users;
+    try {
+      return this.users;
+    } catch (error) {
+      console.log('error', error);
+    }
   }
 
   findOne(id: string): User {
-    return this.users.find((user: User) => id === user.id);
+    try {
+      return this.users.find((user: User) => id === user.id);
+    } catch (error) {
+      console.log('error', error);
+    }
   }
 
   remove(user: User): void {
-    this.users.splice(this.users.indexOf(user), 1);
+    try {
+      this.users.splice(this.users.indexOf(user), 1);
+    } catch (error) {
+      console.log('error', error);
+    }
   }
 
   throwNotFoundException(user: User, id: string): void {
@@ -62,23 +80,5 @@ export class UserService {
       return;
     }
     throw new BadRequestException(`ID ${id} is invalid`);
-  }
-
-  throwCreateBadRequest(dto: CreateUserDto): void {
-    const { login, password } = dto;
-    const isValidDto = isValidCreateUserDto(login, password);
-    if (isValidDto) {
-      return;
-    }
-    throw new BadRequestException(`Login or password is invalid`);
-  }
-
-  throwUpdateBadRequest(dto: UpdateUserDto): void {
-    const { oldPassword, newPassword } = dto;
-    const isValidDto = isValidUpdateUserDto(oldPassword, newPassword);
-    if (isValidDto) {
-      return;
-    }
-    throw new BadRequestException(`Old password and new password are required`);
   }
 }
