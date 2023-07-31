@@ -41,10 +41,10 @@ export class UserController {
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UserWithoutPassword> {
-    const user = this.userService.findOne(id);
+    const user = await this.userService.findOne(id);
     this.userService.throwBadRequestException(id);
     this.userService.throwNotFoundException(user, id);
-    return this.userService.update(id, updateUserDto);
+    return this.userService.update(id, user, updateUserDto);
   }
 
   @Get()
@@ -54,7 +54,7 @@ export class UserController {
 
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<User> {
-    const user = this.userService.findOne(id);
+    const user = await this.userService.findOne(id);
     this.userService.throwBadRequestException(id);
     this.userService.throwNotFoundException(user, id);
     return user;
@@ -62,10 +62,10 @@ export class UserController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: string): void {
-    const user = this.userService.findOne(id);
+  async remove(@Param('id') id: string): Promise<void> {
+    const user = await this.userService.findOne(id);
     this.userService.throwBadRequestException(id);
     this.userService.throwNotFoundException(user, id);
-    this.userService.remove(user);
+    await this.userService.remove(user);
   }
 }

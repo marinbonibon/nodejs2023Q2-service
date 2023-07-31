@@ -30,11 +30,11 @@ export class TrackService {
 
   async update(
     id: string,
+    track: Track,
     { name, artistId, albumId, duration }: TrackDto,
   ): Promise<Track> {
     try {
       return new Promise(async (res) => {
-        const track = await this.findOne(id);
         track.name = name;
         track.artistId = artistId;
         track.albumId = albumId;

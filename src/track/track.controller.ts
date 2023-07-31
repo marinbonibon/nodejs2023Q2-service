@@ -32,7 +32,7 @@ export class TrackController {
     const track = await this.trackService.findOne(id);
     this.trackService.throwBadRequestException(id);
     this.trackService.throwNotFoundException(track, id);
-    return this.trackService.update(id, updateTrackDto);
+    return this.trackService.update(id, track, updateTrackDto);
   }
 
   @Get()

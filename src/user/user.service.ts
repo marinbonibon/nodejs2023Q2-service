@@ -13,7 +13,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UserService {
   private readonly users: User[] = db.user;
 
-  create(user: User): Promise<UserWithoutPassword> {
+  async create(user: User): Promise<UserWithoutPassword> {
     try {
       return new Promise((res) => {
         this.users.push(user);
@@ -25,10 +25,9 @@ export class UserService {
     }
   }
 
-  update(id: string, dto: UpdateUserDto): Promise<UserWithoutPassword> {
+  async update(id: string, user: User, dto: UpdateUserDto): Promise<UserWithoutPassword> {
    try {
      return new Promise((res) => {
-       const user = this.findOne(id);
        if (user.password !== dto.oldPassword) {
          throw new ForbiddenException(`Old password is incorrect`);
        }
@@ -43,7 +42,7 @@ export class UserService {
    }
   }
 
-  findAll(): User[] {
+  async findAll(): Promise<User[]> {
     try {
       return this.users;
     } catch (error) {
@@ -51,7 +50,7 @@ export class UserService {
     }
   }
 
-  findOne(id: string): User {
+  async findOne(id: string): Promise<User> {
     try {
       return this.users.find((user: User) => id === user.id);
     } catch (error) {
@@ -59,7 +58,7 @@ export class UserService {
     }
   }
 
-  remove(user: User): void {
+  async remove(user: User): Promise<void> {
     try {
       this.users.splice(this.users.indexOf(user), 1);
     } catch (error) {
