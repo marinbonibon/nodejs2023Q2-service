@@ -12,6 +12,7 @@ export class ArtistService {
   private readonly artists: Artist[] = db.artist;
   private readonly tracks: Track[] = db.track;
   private readonly albums: Album[] = db.album;
+  private readonly favoriteArtists: string[] = db.favorites.artists;
 
   async create(dto: ArtistDto): Promise<Artist> {
     try {
@@ -73,6 +74,10 @@ export class ArtistService {
           album.artistId = null;
         }
       })
+      const favoriteArtist = this.favoriteArtists.find((artistId: string) => artistId === artist.id);
+      if (favoriteArtist) {
+        this.favoriteArtists.splice(this.favoriteArtists.indexOf(artist.id), 1);
+      }
     } catch (error) {
       console.log('error', error);
     }

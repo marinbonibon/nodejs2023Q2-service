@@ -12,6 +12,7 @@ import { TrackDto } from './dto/track.dto';
 @Injectable()
 export class TrackService {
   private readonly tracks: Track[] = db.track;
+  private readonly favoriteTracks: string[] = db.favorites.tracks;
 
   async create(dto: TrackDto): Promise<Track> {
     try {
@@ -65,6 +66,10 @@ export class TrackService {
   async remove(track: Track): Promise<void> {
     try {
       this.tracks.splice(this.tracks.indexOf(track), 1);
+      const favoriteTrack = this.favoriteTracks.find((trackId: string) => trackId === track.id);
+      if (favoriteTrack) {
+        this.favoriteTracks.splice(this.favoriteTracks.indexOf(track.id), 1);
+      }
     } catch (error) {
       console.log('error', error);
     }

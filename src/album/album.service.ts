@@ -10,6 +10,7 @@ import { Track } from '../track/types/track';
 export class AlbumService {
   private readonly albums: Album[] = db.album;
   private readonly tracks: Track[] = db.track;
+  private readonly favoriteAlbums: string[] = db.favorites.albums;
 
   async create(dto: AlbumDto): Promise<Album> {
     try {
@@ -67,6 +68,10 @@ export class AlbumService {
           track.albumId = null;
         }
       })
+      const favoriteAlbum = this.favoriteAlbums.find((albumId: string) => albumId === album.id);
+      if (favoriteAlbum) {
+        this.favoriteAlbums.splice(this.favoriteAlbums.indexOf(album.id), 1);
+      }
     } catch (error) {
       console.log('error', error);
     }
