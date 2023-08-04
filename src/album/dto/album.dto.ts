@@ -1,4 +1,10 @@
-import { Allow, IsDefined, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  Allow,
+  IsDefined,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 
 export class AlbumDto {
   @IsDefined()

@@ -1,11 +1,14 @@
-import { BadRequestException, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { Artist } from '../artist/types/artist';
 import { Favorites } from './types/favorites';
 import { db } from '../../db/database';
 import { FavoritesResponse } from './types/favorites-response';
 import { Track } from '../track/types/track';
 import { Album } from '../album/types/album';
-import { isIdValid } from '../utils/uuidValidation';
 
 @Injectable()
 export class FavoritesService {
@@ -21,20 +24,26 @@ export class FavoritesService {
         if (!track) return;
         return track;
       });
-      const favoriteArtists = this.favorites.artists.map((favArtistId: string) => {
-        const artist = this.artists.find((artist: Artist) => artist.id === favArtistId);
-        if (!artist) return;
-        return artist;
-      });
+      const favoriteArtists = this.favorites.artists.map(
+        (favArtistId: string) => {
+          const artist = this.artists.find(
+            (artist: Artist) => artist.id === favArtistId,
+          );
+          if (!artist) return;
+          return artist;
+        },
+      );
       const favoriteAlbums = this.favorites.albums.map((favAlbumId: string) => {
-        const album = this.albums.find((album: Album) => album.id === favAlbumId);
+        const album = this.albums.find(
+          (album: Album) => album.id === favAlbumId,
+        );
         if (!album) return;
         return album;
       });
       return {
         tracks: favoriteTracks,
         artists: favoriteArtists,
-        albums: favoriteAlbums
+        albums: favoriteAlbums,
       };
     } catch (error) {
       console.log('error', error);
@@ -46,7 +55,9 @@ export class FavoritesService {
       return new Promise((res) => {
         const track = this.tracks.find((track: Track) => track.id === id);
         if (!track) {
-          throw new UnprocessableEntityException(`Track with ID ${id} does not exist`);
+          throw new UnprocessableEntityException(
+            `Track with ID ${id} does not exist`,
+          );
         }
         this.favorites.tracks.push(id);
         res(track);
@@ -69,7 +80,9 @@ export class FavoritesService {
       return new Promise((res) => {
         const artist = this.artists.find((artist: Artist) => artist.id === id);
         if (!artist) {
-          throw new UnprocessableEntityException(`Artist with ID ${id} does not exist`);
+          throw new UnprocessableEntityException(
+            `Artist with ID ${id} does not exist`,
+          );
         }
         this.favorites.artists.push(id);
         res(artist);
@@ -92,7 +105,9 @@ export class FavoritesService {
       return new Promise((res) => {
         const album = this.albums.find((album: Album) => album.id === id);
         if (!album) {
-          throw new UnprocessableEntityException(`Album with ID ${id} does not exist`);
+          throw new UnprocessableEntityException(
+            `Album with ID ${id} does not exist`,
+          );
         }
         this.favorites.albums.push(id);
         res(album);
@@ -108,13 +123,5 @@ export class FavoritesService {
       throw new NotFoundException(`Album with ID ${id} not found`);
     }
     this.favorites.albums.splice(this.favorites.albums.indexOf(album.id), 1);
-  }
-
-  throwBadRequestException(id: string): void {
-    const isValidId = id.match(isIdValid);
-    if (isValidId) {
-      return;
-    }
-    throw new BadRequestException(`ID ${id} is invalid`);
   }
 }

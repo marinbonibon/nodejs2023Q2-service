@@ -6,8 +6,11 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Post,
-  Put, UsePipes, ValidationPipe
+  Put,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { User, UserWithoutPassword } from './types/user';
 import { randomUUID } from 'crypto';
@@ -38,11 +41,10 @@ export class UserController {
   @Put(':id')
   @UsePipes(new ValidationPipe({}))
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UserWithoutPassword> {
     const user = await this.userService.findOne(id);
-    this.userService.throwBadRequestException(id);
     this.userService.throwNotFoundException(user, id);
     return this.userService.update(id, user, updateUserDto);
   }
@@ -53,18 +55,20 @@ export class UserController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<User> {
+  async findOne(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): Promise<User> {
     const user = await this.userService.findOne(id);
-    this.userService.throwBadRequestException(id);
     this.userService.throwNotFoundException(user, id);
     return user;
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id') id: string): Promise<void> {
+  async remove(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): Promise<void> {
     const user = await this.userService.findOne(id);
-    this.userService.throwBadRequestException(id);
     this.userService.throwNotFoundException(user, id);
     await this.userService.remove(user);
   }

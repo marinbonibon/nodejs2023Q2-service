@@ -6,10 +6,11 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
   UsePipes,
-  ValidationPipe
+  ValidationPipe,
 } from '@nestjs/common';
 import { ArtistService } from './artist.service';
 import { Artist } from './types/artist';
@@ -28,11 +29,10 @@ export class ArtistController {
   @Put(':id')
   @UsePipes(new ValidationPipe({}))
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateArtistDto: ArtistDto,
   ): Promise<Artist> {
     const artist = await this.artistService.findOne(id);
-    this.artistService.throwBadRequestException(id);
     this.artistService.throwNotFoundException(artist, id);
     return this.artistService.update(id, artist, updateArtistDto);
   }
@@ -43,8 +43,9 @@ export class ArtistController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Artist> {
-    this.artistService.throwBadRequestException(id);
+  async findOne(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): Promise<Artist> {
     const artist = await this.artistService.findOne(id);
     this.artistService.throwNotFoundException(artist, id);
     return artist;
@@ -52,8 +53,9 @@ export class ArtistController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id') id: string): Promise<void> {
-    this.artistService.throwBadRequestException(id);
+  async remove(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): Promise<void> {
     const artist = await this.artistService.findOne(id);
     this.artistService.throwNotFoundException(artist, id);
     await this.artistService.remove(artist);

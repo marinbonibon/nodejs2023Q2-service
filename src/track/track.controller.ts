@@ -6,8 +6,11 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Post,
-  Put, UsePipes, ValidationPipe
+  Put,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { TrackService } from './track.service';
 import { Track } from './types/track';
@@ -26,11 +29,10 @@ export class TrackController {
   @Put(':id')
   @UsePipes(new ValidationPipe({ skipNullProperties: true }))
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateTrackDto: TrackDto,
   ): Promise<Track> {
     const track = await this.trackService.findOne(id);
-    this.trackService.throwBadRequestException(id);
     this.trackService.throwNotFoundException(track, id);
     return this.trackService.update(id, track, updateTrackDto);
   }
@@ -41,8 +43,9 @@ export class TrackController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Track> {
-    this.trackService.throwBadRequestException(id);
+  async findOne(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): Promise<Track> {
     const track = await this.trackService.findOne(id);
     this.trackService.throwNotFoundException(track, id);
     return track;
@@ -50,8 +53,9 @@ export class TrackController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id') id: string): Promise<void> {
-    this.trackService.throwBadRequestException(id);
+  async remove(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): Promise<void> {
     const track = await this.trackService.findOne(id);
     this.trackService.throwNotFoundException(track, id);
     await this.trackService.remove(track);

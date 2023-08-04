@@ -1,10 +1,5 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { db } from '../../db/database';
-import { isIdValid } from '../utils/uuidValidation';
 import { Track } from './types/track';
 import { randomUUID } from 'crypto';
 import { TrackDto } from './dto/track.dto';
@@ -66,7 +61,9 @@ export class TrackService {
   async remove(track: Track): Promise<void> {
     try {
       this.tracks.splice(this.tracks.indexOf(track), 1);
-      const favoriteTrack = this.favoriteTracks.find((trackId: string) => trackId === track.id);
+      const favoriteTrack = this.favoriteTracks.find(
+        (trackId: string) => trackId === track.id,
+      );
       if (favoriteTrack) {
         this.favoriteTracks.splice(this.favoriteTracks.indexOf(track.id), 1);
       }
@@ -80,13 +77,5 @@ export class TrackService {
       return;
     }
     throw new NotFoundException(`Track with ID ${id} not found`);
-  }
-
-  throwBadRequestException(id: string): void {
-    const isValidId = id.match(isIdValid);
-    if (isValidId) {
-      return;
-    }
-    throw new BadRequestException(`ID ${id} is invalid`);
   }
 }

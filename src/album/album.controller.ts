@@ -6,10 +6,11 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
   UsePipes,
-  ValidationPipe
+  ValidationPipe,
 } from '@nestjs/common';
 import { AlbumDto } from './dto/album.dto';
 import { Album } from './types/album';
@@ -28,11 +29,10 @@ export class AlbumController {
   @Put(':id')
   @UsePipes(new ValidationPipe({ skipNullProperties: true }))
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateAlbumDto: AlbumDto,
   ): Promise<Album> {
     const album = await this.albumService.findOne(id);
-    this.albumService.throwBadRequestException(id);
     this.albumService.throwNotFoundException(album, id);
     return this.albumService.update(id, album, updateAlbumDto);
   }
@@ -43,8 +43,9 @@ export class AlbumController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Album> {
-    this.albumService.throwBadRequestException(id);
+  async findOne(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): Promise<Album> {
     const album = await this.albumService.findOne(id);
     this.albumService.throwNotFoundException(album, id);
     return album;
@@ -52,8 +53,9 @@ export class AlbumController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id') id: string): Promise<void> {
-    this.albumService.throwBadRequestException(id);
+  async remove(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): Promise<void> {
     const album = await this.albumService.findOne(id);
     this.albumService.throwNotFoundException(album, id);
     await this.albumService.remove(album);

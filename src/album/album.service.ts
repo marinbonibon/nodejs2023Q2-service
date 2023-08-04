@@ -1,8 +1,7 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { db } from '../../db/database';
 import { AlbumDto } from './dto/album.dto';
 import { randomUUID } from 'crypto';
-import { isIdValid } from '../utils/uuidValidation';
 import { Album } from './types/album';
 import { Track } from '../track/types/track';
 
@@ -67,8 +66,10 @@ export class AlbumService {
         if (track.albumId === album.id) {
           track.albumId = null;
         }
-      })
-      const favoriteAlbum = this.favoriteAlbums.find((albumId: string) => albumId === album.id);
+      });
+      const favoriteAlbum = this.favoriteAlbums.find(
+        (albumId: string) => albumId === album.id,
+      );
       if (favoriteAlbum) {
         this.favoriteAlbums.splice(this.favoriteAlbums.indexOf(album.id), 1);
       }
@@ -82,13 +83,5 @@ export class AlbumService {
       return;
     }
     throw new NotFoundException(`Album with ID ${id} not found`);
-  }
-
-  throwBadRequestException(id: string): void {
-    const isValidId = id.match(isIdValid);
-    if (isValidId) {
-      return;
-    }
-    throw new BadRequestException(`ID ${id} is invalid`);
   }
 }

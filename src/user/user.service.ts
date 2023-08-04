@@ -1,12 +1,10 @@
 import {
-  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { User, UserWithoutPassword } from './types/user';
 import { db } from '../../db/database';
-import { isIdValid } from '../utils/uuidValidation';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
@@ -25,21 +23,25 @@ export class UserService {
     }
   }
 
-  async update(id: string, user: User, dto: UpdateUserDto): Promise<UserWithoutPassword> {
-   try {
-     return new Promise((res) => {
-       if (user.password !== dto.oldPassword) {
-         throw new ForbiddenException(`Old password is incorrect`);
-       }
-       user.password = dto.newPassword;
-       user.version += 1;
-       user.updatedAt = new Date().getDate();
-       const { password, ...userWithoutPassword } = user;
-       res(userWithoutPassword);
-     });
-   } catch (error) {
-     console.log('error', error);
-   }
+  async update(
+    id: string,
+    user: User,
+    dto: UpdateUserDto,
+  ): Promise<UserWithoutPassword> {
+    try {
+      return new Promise((res) => {
+        if (user.password !== dto.oldPassword) {
+          throw new ForbiddenException(`Old password is incorrect`);
+        }
+        user.password = dto.newPassword;
+        user.version += 1;
+        user.updatedAt = new Date().getDate();
+        const { password, ...userWithoutPassword } = user;
+        res(userWithoutPassword);
+      });
+    } catch (error) {
+      console.log('error', error);
+    }
   }
 
   async findAll(): Promise<User[]> {
@@ -71,13 +73,5 @@ export class UserService {
       return;
     }
     throw new NotFoundException(`User with ID ${id} not found`);
-  }
-
-  throwBadRequestException(id: string): void {
-    const isValidId = id.match(isIdValid);
-    if (isValidId) {
-      return;
-    }
-    throw new BadRequestException(`ID ${id} is invalid`);
   }
 }
