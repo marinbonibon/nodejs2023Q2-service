@@ -1,0 +1,45 @@
+version: '3'
+services:
+  # PostgreSQL service
+  postgres:
+    image: postgres:latest
+    container_name: service-postgres-container
+    restart: always
+    ports:
+      - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - service-network
+
+  # Application service
+  app:
+    build: .
+    ports:
+      - '${PORT}:${PORT}'
+    container_name: service-app-container
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      PGHOST: postgres
+      PGUSER: ${POSTGRES_USER}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB}
+    volumes:
+      - app-volume:/app
+    networks:
+      - service-network
+
+networks:
+  service-network:
+    driver: bridge
+
+volumes:
+  pgdata:
+  app-volume:
+
