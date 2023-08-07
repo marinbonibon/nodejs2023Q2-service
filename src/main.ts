@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import 'reflect-metadata';
+import { AppDataSource } from './data-source';
 
 dotenv.config();
 
@@ -18,4 +20,10 @@ async function bootstrap() {
   SwaggerModule.setup('doc', app, document);
   await app.listen(PORT);
 }
+AppDataSource.initialize()
+  .then(() => {
+    // here you can start to work with your database
+  })
+  .catch((error) => console.log(error));
+
 bootstrap();

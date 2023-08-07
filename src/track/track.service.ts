@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { db } from '../../db/database';
+import { db } from '../db/database';
 import { Track } from './types/track';
 import { randomUUID } from 'crypto';
 import { TrackDto } from './dto/track.dto';

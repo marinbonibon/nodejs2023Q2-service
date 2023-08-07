@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { db } from '../../db/database';
+import { db } from '../db/database';
 import { AlbumDto } from './dto/album.dto';
 import { randomUUID } from 'crypto';
 import { Album } from './types/album';

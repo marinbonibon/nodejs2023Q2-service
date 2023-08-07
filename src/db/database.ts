@@ -1,6 +1,4 @@
-import { Db } from '../src/types/db';
-
-export const db: Db = {
+export const db = {
   user: [],
   artist: [],
   track: [],
@@ -9,5 +7,5 @@ export const db: Db = {
     artists: [],
     tracks: [],
     albums: [],
-  }
-}
+  },
+};

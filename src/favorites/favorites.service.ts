@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { Artist } from '../artist/types/artist';
 import { Favorites } from './types/favorites';
-import { db } from '../../db/database';
+import { db } from '../db/database';
 import { FavoritesResponse } from './types/favorites-response';
 import { Track } from '../track/types/track';
 import { Album } from '../album/types/album';
