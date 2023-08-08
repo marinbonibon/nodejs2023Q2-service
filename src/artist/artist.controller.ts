@@ -4,17 +4,18 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpStatus,
+  HttpStatus, NotFoundException,
   Param,
   ParseUUIDPipe,
   Post,
   Put,
   UsePipes,
-  ValidationPipe,
+  ValidationPipe
 } from '@nestjs/common';
 import { ArtistService } from './artist.service';
-import { Artist } from './types/artist';
 import { ArtistDto } from './dto/artist.dto';
+import Artist from './entities/artist.entity';
+import { ApiNotFoundResponse } from '@nestjs/swagger';
 
 @Controller('artist')
 export class ArtistController {
@@ -27,14 +28,17 @@ export class ArtistController {
   }
 
   @Put(':id')
+  @ApiNotFoundResponse({ description: 'Artist was not found.' })
   @UsePipes(new ValidationPipe({}))
   async update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateArtistDto: ArtistDto,
   ): Promise<Artist> {
     const artist = await this.artistService.findOne(id);
-    this.artistService.throwNotFoundException(artist, id);
-    return this.artistService.update(id, artist, updateArtistDto);
+    if (!artist) {
+      throw new NotFoundException('Artist was not found.');
+    }
+    return this.artistService.update(id, updateArtistDto);
   }
 
   @Get()
@@ -43,21 +47,27 @@ export class ArtistController {
   }
 
   @Get(':id')
+  @ApiNotFoundResponse({ description: 'Artist was not found.' })
   async findOne(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ): Promise<Artist> {
     const artist = await this.artistService.findOne(id);
-    this.artistService.throwNotFoundException(artist, id);
+    if (!artist) {
+      throw new NotFoundException('Artist was not found.');
+    }
     return artist;
   }
 
   @Delete(':id')
+  @ApiNotFoundResponse({ description: 'Artist was not found.' })
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ): Promise<void> {
     const artist = await this.artistService.findOne(id);
-    this.artistService.throwNotFoundException(artist, id);
+    if (!artist) {
+      throw new NotFoundException('Artist was not found.');
+    }
     await this.artistService.remove(artist);
   }
 }
