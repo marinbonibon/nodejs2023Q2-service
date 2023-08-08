@@ -1,17 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { AlbumDto } from './dto/album.dto';
 import { randomUUID } from 'crypto';
-import { Track } from '../track/types/track';
 import Album from './entities/album.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import User from '../user/entities/user.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class AlbumService {
-  // private readonly albums: Album[] = db.album;
-  // private readonly tracks: Track[] = db.track;
-  // private readonly favoriteAlbums: string[] = db.favorites.albums;
   constructor(
     @InjectRepository(Album)
     private albumRepository: Repository<Album>,
@@ -25,16 +20,13 @@ export class AlbumService {
       newAlbum.year = dto.year;
       newAlbum.artistId = dto.artistId;
       await this.albumRepository.save(newAlbum);
-      return  newAlbum;
+      return newAlbum;
     } catch (error) {
       console.log('error', error);
     }
   }
 
-  async update(
-    id: string,
-    dto: AlbumDto,
-  ): Promise<Album> {
+  async update(id: string, dto: AlbumDto): Promise<Album> {
     try {
       const albumToUpdate = await this.albumRepository.findOneBy({
         id,

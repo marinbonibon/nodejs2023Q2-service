@@ -4,13 +4,14 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpStatus, NotFoundException,
+  HttpStatus,
+  NotFoundException,
   Param,
   ParseUUIDPipe,
   Post,
   Put,
   UsePipes,
-  ValidationPipe
+  ValidationPipe,
 } from '@nestjs/common';
 import { ArtistService } from './artist.service';
 import { ArtistDto } from './dto/artist.dto';

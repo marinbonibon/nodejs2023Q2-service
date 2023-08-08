@@ -25,10 +25,7 @@ export class ArtistService {
     }
   }
 
-  async update(
-    id: string,
-    { name, grammy }: ArtistDto,
-  ): Promise<Artist> {
+  async update(id: string, { name, grammy }: ArtistDto): Promise<Artist> {
     try {
       const artistToUpdate = await this.artistRepository.findOneBy({
         id,

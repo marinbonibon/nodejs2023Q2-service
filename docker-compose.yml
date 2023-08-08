@@ -13,6 +13,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - pglogs:/var/lib/postgresql/logs
     networks:
       - service-network
 
@@ -41,5 +42,6 @@ networks:
 
 volumes:
   pgdata:
+  pglogs:
   app-volume:
 

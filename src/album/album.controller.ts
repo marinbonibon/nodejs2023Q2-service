@@ -4,13 +4,14 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpStatus, NotFoundException,
+  HttpStatus,
+  NotFoundException,
   Param,
   ParseUUIDPipe,
   Post,
   Put,
   UsePipes,
-  ValidationPipe
+  ValidationPipe,
 } from '@nestjs/common';
 import { AlbumDto } from './dto/album.dto';
 import { AlbumService } from './album.service';
@@ -35,10 +36,10 @@ export class AlbumController {
     @Body() updateAlbumDto: AlbumDto,
   ): Promise<Album> {
     const album = await this.albumService.findOne(id);
-    if(!album) {
+    if (!album) {
       throw new NotFoundException('Album was not found.');
     }
-    return this.albumService.update(id,updateAlbumDto);
+    return this.albumService.update(id, updateAlbumDto);
   }
 
   @Get()
@@ -52,7 +53,7 @@ export class AlbumController {
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ): Promise<Album> {
     const album = await this.albumService.findOne(id);
-    if(!album) {
+    if (!album) {
       throw new NotFoundException('Album was not found.');
     }
     return album;

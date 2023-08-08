@@ -1,7 +1,6 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class ArtistCreating1691523825172 implements MigrationInterface {
-
   async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
@@ -10,24 +9,23 @@ export class ArtistCreating1691523825172 implements MigrationInterface {
           {
             name: 'id',
             type: 'varchar',
-            isPrimary: true
+            isPrimary: true,
           },
           {
             name: 'name',
-            type: 'varchar'
+            type: 'varchar',
           },
           {
             name: 'grammy',
-            type: 'boolean'
+            type: 'boolean',
           },
-        ]
+        ],
       }),
-      true
+      true,
     );
   }
 
   async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.dropTable('artist');
   }
-
 }
