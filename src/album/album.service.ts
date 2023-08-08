@@ -42,6 +42,7 @@ export class AlbumService {
       albumToUpdate.name = dto.name;
       albumToUpdate.artistId = dto.artistId;
       albumToUpdate.year = dto.year;
+      await this.albumRepository.save(albumToUpdate);
       return albumToUpdate;
     } catch (error) {
       console.log('error', error);
