@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UserWithoutPassword } from './types/user';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -36,7 +36,11 @@ export class UserService {
     }
   }
 
-  async update(id: string, userToUpdate: User,  dto: UpdateUserDto): Promise<UserWithoutPassword> {
+  async update(
+    id: string,
+    userToUpdate: User,
+    dto: UpdateUserDto,
+  ): Promise<UserWithoutPassword> {
     try {
       userToUpdate.password = dto.newPassword;
       userToUpdate.version += 1;

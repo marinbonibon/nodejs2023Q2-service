@@ -4,9 +4,11 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  NotFoundException,
   Param,
   ParseUUIDPipe,
   Post,
+  UnprocessableEntityException,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -15,14 +17,25 @@ import { FavoritesService } from './favorites.service';
 import { FavoritesResponse } from './types/favorites-response';
 import { Track } from '../track/types/track';
 import { Album } from '../album/types/album';
+import { AlbumService } from '../album/album.service';
+import { TrackService } from '../track/track.service';
+import { ArtistService } from '../artist/artist.service';
 
 @Controller('favs')
 export class FavoritesController {
-  constructor(private favoritesService: FavoritesService) {}
+  constructor(
+    private favoritesService: FavoritesService,
+    private albumService: AlbumService,
+    private trackService: TrackService,
+    private artistService: ArtistService,
+  ) {}
 
   @Get()
   async findAll(): Promise<FavoritesResponse> {
-    return this.favoritesService.findAll();
+    const tracks = await this.trackService.findAll();
+    const artists = await this.artistService.findAll();
+    const albums = await this.albumService.findAll();
+    return this.favoritesService.findAll(tracks, artists, albums);
   }
 
   @Post('track/:id')
@@ -30,7 +43,14 @@ export class FavoritesController {
   async addTrack(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ): Promise<Track> {
-    return this.favoritesService.addFavTrack(id);
+    const track = await this.trackService.findOne(id);
+    if (!track) {
+      throw new UnprocessableEntityException(
+        `Track with ID ${id} does not exist`,
+      );
+    }
+    await this.favoritesService.addFavTrack(id);
+    return track;
   }
 
   @Post('artist/:id')
@@ -38,7 +58,14 @@ export class FavoritesController {
   async addArtist(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ): Promise<Artist> {
-    return this.favoritesService.addFavArtist(id);
+    const artist = await this.artistService.findOne(id);
+    if (!artist) {
+      throw new UnprocessableEntityException(
+        `Artist with ID ${id} does not exist`,
+      );
+    }
+    await this.favoritesService.addFavArtist(id);
+    return artist;
   }
 
   @Post('album/:id')
@@ -46,7 +73,14 @@ export class FavoritesController {
   async addAlbum(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ): Promise<Album> {
-    return this.favoritesService.addFavAlbum(id);
+    const album = await this.albumService.findOne(id);
+    if (!album) {
+      throw new UnprocessableEntityException(
+        `Album with ID ${id} does not exist`,
+      );
+    }
+    await this.favoritesService.addFavAlbum(id);
+    return album;
   }
 
   @Delete('track/:id')
@@ -54,7 +88,11 @@ export class FavoritesController {
   async removeTrack(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ): Promise<void> {
-    return this.favoritesService.removeFavTrack(id);
+    const track = await this.favoritesService.findFavTrack(id);
+    if (!track) {
+      throw new NotFoundException(`Favorite track with ID ${id} not found`);
+    }
+    await this.favoritesService.removeFavTrack(id);
   }
 
   @Delete('artist/:id')
@@ -62,7 +100,11 @@ export class FavoritesController {
   async removeArtist(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ): Promise<void> {
-    return this.favoritesService.removeFavArtist(id);
+    const artist = await this.favoritesService.findFavArtist(id);
+    if (!artist) {
+      throw new NotFoundException(`Favorite artist with ID ${id} not found`);
+    }
+    await this.favoritesService.removeFavArtist(id);
   }
 
   @Delete('album/:id')
@@ -70,6 +112,10 @@ export class FavoritesController {
   async removeAlbum(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ): Promise<void> {
-    return this.favoritesService.removeFavAlbum(id);
+    const album = await this.favoritesService.findFavAlbum(id);
+    if (!album) {
+      throw new NotFoundException(`Favorite album with ID ${id} not found`);
+    }
+    await this.favoritesService.removeFavAlbum(id);
   }
 }

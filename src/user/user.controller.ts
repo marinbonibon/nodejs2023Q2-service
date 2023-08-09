@@ -1,7 +1,8 @@
 import {
   Body,
   Controller,
-  Delete, ForbiddenException,
+  Delete,
+  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
@@ -11,7 +12,7 @@ import {
   Post,
   Put,
   UsePipes,
-  ValidationPipe
+  ValidationPipe,
 } from '@nestjs/common';
 import { UserWithoutPassword } from './types/user';
 import { UserService } from './user.service';
