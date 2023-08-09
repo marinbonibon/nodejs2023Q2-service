@@ -36,14 +36,8 @@ export class UserService {
     }
   }
 
-  async update(id: string, dto: UpdateUserDto): Promise<UserWithoutPassword> {
+  async update(id: string, userToUpdate: User,  dto: UpdateUserDto): Promise<UserWithoutPassword> {
     try {
-      const userToUpdate = await this.userRepository.findOneBy({
-        id,
-      });
-      if (userToUpdate.password !== dto.oldPassword) {
-        throw new ForbiddenException(`Old password is incorrect`);
-      }
       userToUpdate.password = dto.newPassword;
       userToUpdate.version += 1;
       userToUpdate.updatedAt = new Date();

@@ -1,7 +1,7 @@
 import {
   Body,
   Controller,
-  Delete,
+  Delete, ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
@@ -11,7 +11,7 @@ import {
   Post,
   Put,
   UsePipes,
-  ValidationPipe,
+  ValidationPipe
 } from '@nestjs/common';
 import { UserWithoutPassword } from './types/user';
 import { UserService } from './user.service';
@@ -45,11 +45,14 @@ export class UserController {
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UserWithoutPassword> {
-    const updatedUser = await this.userService.update(id, updateUserDto);
-    if (!updatedUser) {
+    const userToUpdate = await this.userService.findOne(id);
+    if (!userToUpdate) {
       throw new NotFoundException('User was not found.');
     }
-    return updatedUser;
+    if (userToUpdate.password !== updateUserDto.oldPassword) {
+      throw new ForbiddenException(`Old password is incorrect`);
+    }
+    return await this.userService.update(id, userToUpdate, updateUserDto);
   }
 
   @Get()
