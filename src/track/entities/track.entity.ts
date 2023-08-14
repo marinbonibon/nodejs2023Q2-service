@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import Album from '../../album/entities/album.entity';
 
 @Entity()
 class Track {
@@ -16,14 +17,12 @@ class Track {
 
   @Column()
   duration: number;
-  //
-  // @ManyToOne(() => Album, (album) => album.tracks,
-  //   {
-  //     cascade: true,
-  //     onUpdate: 'CASCADE',
-  //     nullable: true
-  //   })
-  // public album: Album;
+
+  @ManyToOne(() => Album, (album) => album.tracks, {
+    onDelete: 'SET NULL',
+    nullable: true,
+  })
+  public album?: Album;
 }
 
 export default Track;

@@ -4,13 +4,12 @@ import { TrackDto } from './dto/track.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import Track from './entities/track.entity';
-import { FavoritesService } from '../favorites/favorites.service';
 
 @Injectable()
 export class TrackService {
   constructor(
     @InjectRepository(Track)
-    private trackRepository: Repository<Track>, // private favoritesService: FavoritesService
+    private trackRepository: Repository<Track>,
   ) {}
 
   async create(dto: TrackDto): Promise<Track> {
@@ -67,10 +66,6 @@ export class TrackService {
 
   async remove(track: Track): Promise<void> {
     try {
-      // const favoriteTrack = await this.favoritesService.findFavTrack(track.id);
-      // if (favoriteTrack) {
-      //   await this.favoritesService.removeFavAlbum(favoriteTrack.id );
-      // }
       await this.trackRepository.remove(track);
     } catch (error) {
       console.log('error', error);

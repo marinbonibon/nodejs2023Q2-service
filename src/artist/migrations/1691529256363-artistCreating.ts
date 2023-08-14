@@ -1,10 +1,10 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
-export class TrackCreating1691529256363 implements MigrationInterface {
+export class ArtistCreating1691529256363 implements MigrationInterface {
   async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'track',
+        name: 'artist',
         columns: [
           {
             name: 'id',
@@ -16,18 +16,8 @@ export class TrackCreating1691529256363 implements MigrationInterface {
             type: 'varchar',
           },
           {
-            name: 'artistId',
-            type: 'varchar',
-            isNullable: true,
-          },
-          {
-            name: 'albumId',
-            type: 'varchar',
-            isNullable: true,
-          },
-          {
-            name: 'duration',
-            type: 'int',
+            name: 'grammy',
+            type: 'boolean',
           },
         ],
       }),
@@ -36,6 +26,6 @@ export class TrackCreating1691529256363 implements MigrationInterface {
   }
 
   async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('track');
+    await queryRunner.dropTable('artist');
   }
 }

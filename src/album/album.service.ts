@@ -4,8 +4,6 @@ import { randomUUID } from 'crypto';
 import Album from './entities/album.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import Track from '../track/entities/track.entity';
-import { TrackService } from '../track/track.service';
 import { FavoritesService } from '../favorites/favorites.service';
 
 @Injectable()
@@ -13,7 +11,6 @@ export class AlbumService {
   constructor(
     @InjectRepository(Album)
     private albumRepository: Repository<Album>,
-    private trackService: TrackService,
     private favoritesService: FavoritesService,
   ) {}
 
@@ -56,7 +53,8 @@ export class AlbumService {
 
   async findOne(id: string): Promise<Album> {
     try {
-      return await this.albumRepository.findOne({
+      return this.albumRepository.findOne({
+        relations: { tracks: true },
         where: {
           id,
         },
@@ -68,13 +66,6 @@ export class AlbumService {
 
   async remove(album: Album): Promise<void> {
     try {
-      const tracks = await this.trackService.findAll();
-      tracks.forEach((track: Track) => {
-        if (track.albumId === album.id) {
-          track.albumId = null;
-          this.trackService.update(track.id, track);
-        }
-      });
       const favoriteAlbum = await this.favoritesService.findFavAlbum(album.id);
       if (favoriteAlbum) {
         await this.favoritesService.removeFavAlbum(favoriteAlbum.id);
