@@ -4,12 +4,17 @@ import { randomUUID } from 'crypto';
 import Album from './entities/album.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import Track from '../track/entities/track.entity';
+import { TrackService } from '../track/track.service';
+import { FavoritesService } from '../favorites/favorites.service';
 
 @Injectable()
 export class AlbumService {
   constructor(
     @InjectRepository(Album)
     private albumRepository: Repository<Album>,
+    private trackService: TrackService,
+    private favoritesService: FavoritesService,
   ) {}
 
   async create(dto: AlbumDto): Promise<Album> {
@@ -63,18 +68,18 @@ export class AlbumService {
 
   async remove(album: Album): Promise<void> {
     try {
+      const tracks = await this.trackService.findAll();
+      tracks.forEach((track: Track) => {
+        if (track.albumId === album.id) {
+          track.albumId = null;
+          this.trackService.update(track.id, track);
+        }
+      });
+      const favoriteAlbum = await this.favoritesService.findFavAlbum(album.id);
+      if (favoriteAlbum) {
+        await this.favoritesService.removeFavAlbum(favoriteAlbum.id);
+      }
       await this.albumRepository.remove(album);
-      // this.tracks.forEach((track: Track) => {
-      //   if (track.albumId === album.id) {
-      //     track.albumId = null;
-      //   }
-      // });
-      // const favoriteAlbum = this.favoriteAlbums.find(
-      //   (albumId: string) => albumId === album.id,
-      // );
-      // if (favoriteAlbum) {
-      //   this.favoriteAlbums.splice(this.favoriteAlbums.indexOf(album.id), 1);
-      // }
     } catch (error) {
       console.log('error', error);
     }

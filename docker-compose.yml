@@ -32,7 +32,7 @@ services:
       PGPASSWORD: ${POSTGRES_PASSWORD}
       PGDATABASE: ${POSTGRES_DB}
     volumes:
-      - app-volume:/app
+      - .:/app
     networks:
       - service-network
 

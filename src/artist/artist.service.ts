@@ -4,12 +4,20 @@ import { ArtistDto } from './dto/artist.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import Artist from './entities/artist.entity';
+import Track from '../track/entities/track.entity';
+import { TrackService } from '../track/track.service';
+import { FavoritesService } from '../favorites/favorites.service';
+import { AlbumService } from '../album/album.service';
+import Album from '../album/entities/album.entity';
 
 @Injectable()
 export class ArtistService {
   constructor(
     @InjectRepository(Artist)
     private artistRepository: Repository<Artist>,
+    private trackService: TrackService,
+    private albumService: AlbumService,
+    private favoritesService: FavoritesService,
   ) {}
 
   async create(dto: ArtistDto): Promise<Artist> {
@@ -61,23 +69,30 @@ export class ArtistService {
 
   async remove(artist: Artist): Promise<void> {
     try {
+      const tracks = await this.trackService.findAll();
+      tracks.forEach((track: Track) => {
+        if (track.artistId === artist.id) {
+          track.artistId = null;
+          this.trackService.update(track.id, track);
+        }
+      });
+
+      const albums = await this.albumService.findAll();
+      albums.forEach((album: Album) => {
+        if (album.artistId === artist.id) {
+          album.artistId = null;
+          this.albumService.update(album.id, album);
+        }
+      });
+
+      const favoriteArtist = await this.favoritesService.findFavArtist(
+        artist.id,
+      );
+      if (favoriteArtist) {
+        await this.favoritesService.removeFavArtist(favoriteArtist.id);
+      }
+
       await this.artistRepository.remove(artist);
-      // this.tracks.forEach((track: Track) => {
-      //   if (track.artistId === artist.id) {
-      //     track.artistId = null;
-      //   }
-      // });
-      // this.albums.forEach((album: Album) => {
-      //   if (album.artistId === artist.id) {
-      //     album.artistId = null;
-      //   }
-      // });
-      // const favoriteArtist = this.favoriteArtists.find(
-      //   (artistId: string) => artistId === artist.id,
-      // );
-      // if (favoriteArtist) {
-      //   this.favoriteArtists.splice(this.favoriteArtists.indexOf(artist.id), 1);
-      // }
     } catch (error) {
       console.log('error', error);
     }

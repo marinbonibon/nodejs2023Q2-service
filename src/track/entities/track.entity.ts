@@ -16,6 +16,14 @@ class Track {
 
   @Column()
   duration: number;
+  //
+  // @ManyToOne(() => Album, (album) => album.tracks,
+  //   {
+  //     cascade: true,
+  //     onUpdate: 'CASCADE',
+  //     nullable: true
+  //   })
+  // public album: Album;
 }
 
 export default Track;

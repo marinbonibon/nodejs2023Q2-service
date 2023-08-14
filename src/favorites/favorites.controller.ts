@@ -12,14 +12,14 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { Artist } from '../artist/types/artist';
 import { FavoritesService } from './favorites.service';
 import { FavoritesResponse } from './types/favorites-response';
-import { Track } from '../track/types/track';
-import { Album } from '../album/types/album';
 import { AlbumService } from '../album/album.service';
 import { TrackService } from '../track/track.service';
 import { ArtistService } from '../artist/artist.service';
+import Track from '../track/entities/track.entity';
+import Artist from '../artist/entities/artist.entity';
+import Album from '../album/entities/album.entity';
 
 @Controller('favs')
 export class FavoritesController {
@@ -59,6 +59,7 @@ export class FavoritesController {
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ): Promise<Artist> {
     const artist = await this.artistService.findOne(id);
+    console.log('artist', artist);
     if (!artist) {
       throw new UnprocessableEntityException(
         `Artist with ID ${id} does not exist`,

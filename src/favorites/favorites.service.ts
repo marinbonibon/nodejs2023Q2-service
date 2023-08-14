@@ -25,16 +25,14 @@ export class FavoritesService {
       const favoriteTrackIds = await this.favTrackRepository.find();
       const favoriteArtistIds = await this.favArtistRepository.find();
       const favoriteAlbumIds = await this.favAlbumRepository.find();
-      const favoriteTracks = favoriteTrackIds.map((id: FavTracks | string) => {
-        return tracks.find((track: Track) => track.id === id);
+      const favoriteTracks = favoriteTrackIds.map((favTrack: FavTracks) => {
+        return tracks.find((track: Track) => track.id === favTrack.id);
       });
-      const favoriteArtists = favoriteArtistIds.map(
-        (id: FavArtists | string) => {
-          return artists.find((artist: Artist) => artist.id === id);
-        },
-      );
-      const favoriteAlbums = favoriteAlbumIds.map((id: FavAlbums | string) => {
-        return albums.find((album: Album) => album.id === id);
+      const favoriteArtists = favoriteArtistIds.map((favArtist: FavArtists) => {
+        return artists.find((artist: Artist) => artist.id === favArtist.id);
+      });
+      const favoriteAlbums = favoriteAlbumIds.map((favAlbum: FavAlbums) => {
+        return albums.find((album: Album) => album.id === favAlbum.id);
       });
 
       return {
@@ -68,7 +66,7 @@ export class FavoritesService {
   }
 
   async removeFavTrack(id: string): Promise<void> {
-    await this.favAlbumRepository.remove({ id });
+    await this.favTrackRepository.remove({ id });
   }
 
   async findFavArtist(id: string): Promise<FavAlbums> {
