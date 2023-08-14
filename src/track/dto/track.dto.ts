@@ -3,7 +3,7 @@ import {
   IsDefined,
   IsNotEmpty,
   IsNumber,
-  IsString
+  IsString,
 } from 'class-validator';
 
 export class TrackDto {
